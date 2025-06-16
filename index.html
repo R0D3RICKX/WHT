@@ -56,10 +56,11 @@
 
   <script>
     /* === CONFIG === */
-    const KEY        = "AIzaSyCUPwcG7eBOaKu0NzklwaJJ16DV63woU88";               // keep your key
-    const MODEL_MAIN = "gemini-2.5-flash-preview-05-20";                         // for rates & article
-    const MODEL_SLUG = "gemini-2.0-flash";                                       // for payer-slug detection
-    const URL_BASE   = m => `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${KEY}`;
+    const KEY           = "AIzaSyCUPwcG7eBOaKu0NzklwaJJ16DV63woU88";               // keep your key
+    const MODEL_MAIN    = "gemini-2.5-flash-preview-05-20";                         // for rates only
+    const MODEL_ARTICLE = "gemini-2.5-flash-preview-04-17";                         // for treaty article
+    const MODEL_SLUG    = "gemini-2.0-flash";                                       // for payer-slug detection
+    const URL_BASE      = m => `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${KEY}`;
 
     /* === SLUG LIST === */
     const SLUGS = [
@@ -94,12 +95,12 @@ Return ONLY the slug, lowercase, hyphenated, no extra text.
 Valid slugs:
 ${SLUGS.join(", ")}` ;
 
-    const makeRatesPrompt = (pwcUrl) => 
+    const makeRatesPrompt = pwcUrl => 
 `Role: You are a Withholding Tax (WHT) researcher.
 Task: Using *only* the following PwC page as your source:
 ${pwcUrl}
 provide the domestic and treaty WHT rates for the transaction below.
-Provide any commentary based on the PwC page that supports each rate. For example "Under UK domestic law, a general withholding tax (WHT) rate of 20% applies to payments of UK-source interest, regardless of the recipient's residency. However, this is subject to certain exceptions. If none of the exceptions apply, a payment of interest must be made after the deduction of WHT unless HMRC has authorised a gross or reduced payment due to treaty relief."
+Provide any commentary based on the PwC page that supports each rate.
 Return exactly:
 [Territories]: ...
 [Domestic Rate]: ...
@@ -107,9 +108,14 @@ Return exactly:
 
     const PROMPT_ARTICLE = 
 `Role: You are a Withholding Tax (WHT) researcher.
-Task: Provide the FULL treaty article that sets the WHT rate for the transaction below e.g. the whole of Article 11.
+Task: Provide the FULL treaty article that sets the WHT rate for the transaction below (e.g. the whole of Article 11).
 Return exactly:
 [Treaty Article]: ...` ;
+
+    const PROMPT_ARTICLE_ALT =
+`Please provide the complete text of the treaty article (including the article number, title, and all numbered paragraphs)
+that governs the withholding-tax rate for the transaction described below.
+Return ONLY the article text — no commentary, no prefixes.` ;
 
     /* === HELPERS === */
     const $ = s => document.querySelector(s);
@@ -204,7 +210,7 @@ Return exactly:
           MODEL_SLUG,
           PROMPT_DETECT_SLUG,
           query,
-          [{googleSearch:{}}]           // tools for slug detection (simple)
+          [{googleSearch:{}}]
         );
         const slug = slugRes.txt.trim().toLowerCase();
         phSlug.innerHTML=`<h2>Payer jurisdiction</h2><div>${escapeHTML(slug)}</div>`;
@@ -220,53 +226,71 @@ Return exactly:
         phRates.innerHTML="<h2>WHT Rates</h2>Processing…";
 
         /* --- STEP 2: run rates & article in parallel --- */
-        const [rates,article]=await Promise.all([
+        const [ratesRes,articleRes] = await Promise.all([
           callGemini(
-            MODEL_MAIN,
+            MODEL_MAIN,                             // rates
             makeRatesPrompt(pwcUrl),
             query,
-            [{urlContext:{}},{googleSearch:{}}]  // BOTH tools
+            [{urlContext:{}},{googleSearch:{}}]
           ),
           callGemini(
-            MODEL_MAIN,
+            MODEL_ARTICLE,                          // treaty article (NEW MODEL)
             PROMPT_ARTICLE,
             query,
             [{googleSearch:{}}]
           )
         ]);
 
-        /* ========== RATES BOX ========== */
-        const territories=grab("Territories",rates.txt);
-        const domRate=grab("Domestic Rate",rates.txt);
-        const trtRate=grab("Treaty Rate",rates.txt);
+        /* ========== WHT RATES ========== */
+        const territories=grab("Territories",ratesRes.txt);
+        const domRate    =grab("Domestic Rate",ratesRes.txt);
+        const trtRate    =grab("Treaty Rate",ratesRes.txt);
 
         let rHTML=`<h2>WHT Rates</h2>`;
         if(territories) rHTML+=`<div class="sec"><span class="label">Territories:</span> ${escapeHTML(territories)}</div>`;
-        if(domRate) rHTML+=`<div class="sec"><span class="label">Domestic Rate:</span><br><pre>${escapeHTML(domRate)}</pre></div>`;
-        if(trtRate) rHTML+=`<div class="sec"><span class="label">Treaty Rate:</span><br><pre>${escapeHTML(trtRate)}</pre></div>`;
+        if(domRate)     rHTML+=`<div class="sec"><span class="label">Domestic Rate:</span><br><pre>${escapeHTML(domRate)}</pre></div>`;
+        if(trtRate)     rHTML+=`<div class="sec"><span class="label">Treaty Rate:</span><br><pre>${escapeHTML(trtRate)}</pre></div>`;
 
-        if(rates.links.size){
+        if(ratesRes.links.size){
           rHTML+='<div class="sec links"><span class="label">Sources:</span>';
-          rates.links.forEach((title,u)=>{
+          ratesRes.links.forEach((title,u)=>{
             rHTML+=`<a href="${u}" target="_blank" data-domain="${domain(u)}">${escapeHTML(title)}</a>`;
           });
           rHTML+='</div>';
         }
-        rHTML+=`<details><summary>Raw Gemini output</summary><pre>${escapeHTML(rates.txt)}</pre><pre>${escapeHTML(rates.raw)}</pre></details>`;
+        rHTML+=`<details><summary>Raw Gemini output</summary><pre>${escapeHTML(ratesRes.txt)}</pre><pre>${escapeHTML(ratesRes.raw)}</pre></details>`;
         phRates.innerHTML=rHTML;
 
-        /* ========== ARTICLE BOX ========== */
-        const treatyArt=grab("Treaty Article",article.txt)||"(not returned)";
+        /* ========== TREATY ARTICLE ========== */
+        let treatyArt     = grab("Treaty Article",articleRes.txt);
+        let articleLinks  = articleRes.links;
+
+        /* If the first attempt failed, use fallback prompt (same MODEL_ARTICLE) */
+        if(!treatyArt){
+          const articleRes2 = await callGemini(
+            MODEL_ARTICLE,
+            PROMPT_ARTICLE_ALT,
+            query,
+            [{googleSearch:{}}]
+          );
+          treatyArt    = articleRes2.txt.trim();
+          articleLinks = articleRes2.links.size ? articleRes2.links : articleLinks;
+        }
+
+        if(!treatyArt) treatyArt="(not returned)";
+
         let aHTML="<h2>Treaty Article</h2>";
         aHTML+=`<div class="sec"><pre>${escapeHTML(treatyArt)}</pre></div>`;
-        if(article.links.size){
+
+        if(articleLinks && articleLinks.size){
           aHTML+='<div class="sec links"><span class="label">Sources:</span>';
-          article.links.forEach((title,u)=>{
+          articleLinks.forEach((title,u)=>{
             aHTML+=`<a href="${u}" target="_blank" data-domain="${domain(u)}">${escapeHTML(title)}</a>`;
           });
           aHTML+='</div>';
         }
-        aHTML+=`<details><summary>Raw Gemini output</summary><pre>${escapeHTML(article.txt)}</pre><pre>${escapeHTML(article.raw)}</pre></details>`;
+
+        aHTML+=`<details><summary>Raw Gemini output (initial)</summary><pre>${escapeHTML(articleRes.txt)}</pre><pre>${escapeHTML(articleRes.raw)}</pre></details>`;
         phArt.innerHTML=aHTML;
 
       }catch(err){
