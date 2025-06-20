@@ -1,102 +1,348 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>WHT Analysis (Gemini)</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    body { font-family: Roboto, Arial, sans-serif; background:#f7f7fb; margin:0 }
-    .container { max-width:760px; margin:40px auto; background:#fff; padding:2rem;
-                 border-radius:18px; box-shadow:0 8px 32px rgba(30,30,60,.13) }
-    h1 { margin:0 0 1.4rem; text-align:center; font-size:2rem; color:#28487a }
-    label { font-weight:600; color:#425075; display:block; margin-bottom:.4rem }
-    textarea { width:100%; min-height:80px; padding:10px; border:1px solid #c5cbe0;
-               border-radius:8px; font-size:1rem; resize:vertical }
-    textarea:focus { border-color:#4285f4; outline:none }
-    .chips { display:flex; gap:.5rem; flex-wrap:wrap; margin:.6rem 0 1rem }
-    .chip { background:#e8f0fe; border:1px solid #a3c0ff; color:#1a73e8;
-            padding:.35rem .9rem; border-radius:16px; font-size:.9rem; cursor:pointer;
-            user-select:none }
-    .chip:hover { background:#d2e3fc }
-    button { background:#4285f4; color:#fff; border:none; padding:.8rem 1.6rem;
-             border-radius:8px; font-size:1.05rem; font-weight:600; cursor:pointer }
-    button:disabled{ background:#a5c6fa; cursor:wait }
-    #results-container{ display:flex; flex-direction:column; gap:1.5rem; margin-top:1.3rem }
-    .box{ background:#f1f5fc;border-radius:12px;padding:1.2rem;color:#232847 }
-    .box h2{ margin:0 0 .8rem;font-size:1.2rem;color:#29477c }
-    .sec{ margin-bottom:1rem }
-    .sec span.label{ font-weight:700;color:#29477c }
-    .links a{ display:block;color:#1a73e8;text-decoration:underline;
-              word-break:break-all;font-size:.95rem }
-    .links a::after{ content:" (" attr(data-domain) ")"; font-size:.85em; color:#666 }
-    .error{ background:#fff6f6;border-radius:8px;padding:1rem;color:#d93025 }
-    details{ margin-top:1.2rem;font-size:.85rem }
-    summary{ cursor:pointer;font-weight:600;color:#555 }
-    pre{ white-space:pre-wrap; word-wrap:break-word }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>WHT Analysis</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <title>WHT Analysis (Gemini)</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", Roboto, Arial, sans-serif;
+        background: linear-gradient(135deg, #eaf0fc, #f7f7fb);
+        margin: 0;
+      }
+      .container {
+        max-width: 820px;
+        margin: 50px auto;
+        background: #fff;
+        padding: 2.4rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 36px rgba(30, 30, 60, 0.15);
+      }
+      h1 {
+        margin: 0 0 1.4rem;
+        text-align: center;
+        font-size: 2rem;
+        color: #28487a;
+      }
+      label {
+        font-weight: 600;
+        color: #425075;
+        display: block;
+        margin-bottom: 0.4rem;
+      }
+      textarea {
+        width: 100%;
+        min-height: 80px;
+        padding: 10px;
+        border: 1px solid #c5cbe0;
+        border-radius: 8px;
+        font-size: 1rem;
+        resize: vertical;
+      }
+      textarea:focus {
+        border-color: #4285f4;
+        outline: none;
+      }
+      .chips {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin: 0.6rem 0 1rem;
+      }
+      .chip {
+        background: #eef3ff;
+        border: 1px solid #aac5ff;
+        color: #1a73e8;
+        padding: 0.35rem 0.9rem;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.2s;
+      }
+      .chip:hover {
+        background: #dae6ff;
+      }
+      button {
+        background: #4285f4;
+        color: #fff;
+        border: none;
+        padding: 0.8rem 1.6rem;
+        border-radius: 8px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      button:hover:not(:disabled) {
+        background: #3b78ee;
+      }
+      button:disabled {
+        background: #a5c6fa;
+        cursor: wait;
+      }
+      #results-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 1.3rem;
+        transition: opacity 0.2s;
+      }
+      .box {
+        background: #f8faff;
+        border-radius: 12px;
+        padding: 1.2rem;
+        color: #232847;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+      }
+      .box h2 {
+        margin: 0 0 0.8rem;
+        font-size: 1.2rem;
+        color: #29477c;
+      }
+      .sec {
+        margin-bottom: 1rem;
+      }
+      .sec span.label {
+        font-weight: 700;
+        color: #29477c;
+      }
+      .links a {
+        display: block;
+        color: #1a73e8;
+        text-decoration: underline;
+        word-break: break-all;
+        font-size: 0.95rem;
+      }
+      .links a::after {
+        content: " (" attr(data-domain) ")";
+        font-size: 0.85em;
+        color: #666;
+      }
+      .error {
+        background: #fff6f6;
+        border-radius: 8px;
+        padding: 1rem;
+        color: #d93025;
+      }
+      details {
+        margin-top: 1.2rem;
+        font-size: 0.85rem;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 600;
+        color: #555;
+        transition: color 0.2s;
+      }
+      summary:hover {
+        color: #222;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>WHT Analysis</h1>
 
-    <div class="chips" id="chips">
-      <div class="chip">UK pays interest to USA</div>
-      <div class="chip">Germany pays dividends to France</div>
-      <div class="chip">Singapore pays royalties to India</div>
+      <div class="chips" id="chips">
+        <div class="chip">UK pays interest to USA</div>
+        <div class="chip">Germany pays dividends to France</div>
+        <div class="chip">Singapore pays royalties to India</div>
+      </div>
+
+      <form id="f">
+        <label for="d">Describe the transaction(s):</label>
+        <textarea
+          id="d"
+          placeholder="e.g. UK pays royalties to France"
+        ></textarea>
+        <button id="b" type="submit">Analyse</button>
+      </form>
+
+      <div id="results-container"></div>
     </div>
 
-    <form id="f">
-      <label for="d">Describe the transaction(s):</label>
-      <textarea id="d" placeholder="e.g. UK pays royalties to France"></textarea>
-      <button id="b" type="submit">Analyse</button>
-    </form>
+    <script>
+      /* === CONFIG === */
+      const KEY = "AIzaSyCUPwcG7eBOaKu0NzklwaJJ16DV63woU88"; // keep your key
+      const MODEL_MAIN = "gemini-2.5-flash-preview-05-20"; // for rates only
+      const MODEL_ARTICLE = "gemini-2.5-flash-preview-04-17"; // for treaty article
+      const MODEL_SLUG = "gemini-2.0-flash"; // for payer-slug detection
+      const URL_BASE = (m) =>
+        `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${KEY}`;
 
-    <div id="results-container"></div>
-  </div>
+      /* === SLUG LIST === */
+      const SLUGS = [
+        "albania",
+        "algeria",
+        "angola",
+        "argentina",
+        "armenia",
+        "australia",
+        "austria",
+        "azerbaijan",
+        "bahrain",
+        "bangladesh",
+        "barbados",
+        "belgium",
+        "bermuda",
+        "bolivia",
+        "bosnia-and-herzegovina",
+        "botswana",
+        "brazil",
+        "brunei-darussalam",
+        "bulgaria",
+        "cabo-verde",
+        "cambodia",
+        "cameroon-republic-of",
+        "canada",
+        "cayman-islands",
+        "chad",
+        "chile",
+        "china-peoples-republic-of",
+        "colombia",
+        "congo-democratic-republic-of-the",
+        "congo-republic-of",
+        "costa-rica",
+        "croatia",
+        "cyprus",
+        "czech-republic",
+        "denmark",
+        "dominican-republic",
+        "ecuador",
+        "egypt",
+        "el-salvador",
+        "equatorial-guinea",
+        "estonia",
+        "eswatini",
+        "ethiopia",
+        "finland",
+        "france",
+        "gabon",
+        "georgia",
+        "germany",
+        "ghana",
+        "gibraltar",
+        "greece",
+        "greenland",
+        "guatemala",
+        "guernsey-channel-islands",
+        "guyana",
+        "honduras",
+        "hong-kong-sar",
+        "hungary",
+        "iceland",
+        "india",
+        "indonesia",
+        "iraq",
+        "ireland",
+        "isle-of-man",
+        "israel",
+        "italy",
+        "ivory-coast-cote-divoire",
+        "jamaica",
+        "japan",
+        "jersey-channel-islands",
+        "jordan",
+        "kazakhstan",
+        "kenya",
+        "korea-republic-of",
+        "kosovo",
+        "kuwait",
+        "lao-pdr",
+        "latvia",
+        "lebanon",
+        "libya",
+        "liechtenstein",
+        "lithuania",
+        "luxembourg",
+        "macau-sar",
+        "madagascar",
+        "malaysia",
+        "malta",
+        "mauritania",
+        "mauritius",
+        "mexico",
+        "moldova",
+        "mongolia",
+        "montenegro",
+        "morocco",
+        "mozambique",
+        "myanmar",
+        "namibia-republic-of",
+        "netherlands",
+        "new-caledonia",
+        "new-zealand",
+        "nicaragua",
+        "nigeria",
+        "north-macedonia",
+        "norway",
+        "oman",
+        "pakistan",
+        "palestinian-territories",
+        "panama",
+        "papua-new-guinea",
+        "paraguay",
+        "peru",
+        "philippines",
+        "poland",
+        "portugal",
+        "puerto-rico",
+        "qatar",
+        "romania",
+        "russia",
+        "rwanda",
+        "saudi-arabia",
+        "senegal",
+        "serbia",
+        "sierra-leone",
+        "singapore",
+        "slovak-republic",
+        "slovenia",
+        "south-africa",
+        "spain",
+        "sri-lanka",
+        "sweden",
+        "switzerland",
+        "taiwan",
+        "tanzania",
+        "thailand",
+        "timor-leste",
+        "trinidad-and-tobago",
+        "tunisia",
+        "turkey",
+        "turkmenistan",
+        "uganda",
+        "ukraine",
+        "united-arab-emirates",
+        "united-kingdom",
+        "united-states",
+        "uruguay",
+        "uzbekistan",
+        "venezuela",
+        "vietnam",
+        "zambia",
+        "zimbabwe",
+      ];
 
-  <script>
-    /* === CONFIG === */
-    const KEY           = "AIzaSyCUPwcG7eBOaKu0NzklwaJJ16DV63woU88";               // keep your key
-    const MODEL_MAIN    = "gemini-2.5-flash-preview-05-20";                         // for rates only
-    const MODEL_ARTICLE = "gemini-2.5-flash-preview-04-17";                         // for treaty article
-    const MODEL_SLUG    = "gemini-2.0-flash";                                       // for payer-slug detection
-    const URL_BASE      = m => `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${KEY}`;
-
-    /* === SLUG LIST === */
-    const SLUGS = [
-      "albania","algeria","angola","argentina","armenia","australia","austria","azerbaijan",
-      "bahrain","bangladesh","barbados","belgium","bermuda","bolivia","bosnia-and-herzegovina",
-      "botswana","brazil","brunei-darussalam","bulgaria","cabo-verde","cambodia","cameroon-republic-of",
-      "canada","cayman-islands","chad","chile","china-peoples-republic-of","colombia",
-      "congo-democratic-republic-of-the","congo-republic-of","costa-rica","croatia","cyprus",
-      "czech-republic","denmark","dominican-republic","ecuador","egypt","el-salvador",
-      "equatorial-guinea","estonia","eswatini","ethiopia","finland","france","gabon","georgia",
-      "germany","ghana","gibraltar","greece","greenland","guatemala","guernsey-channel-islands",
-      "guyana","honduras","hong-kong-sar","hungary","iceland","india","indonesia","iraq",
-      "ireland","isle-of-man","israel","italy","ivory-coast-cote-divoire","jamaica","japan",
-      "jersey-channel-islands","jordan","kazakhstan","kenya","korea-republic-of","kosovo","kuwait",
-      "lao-pdr","latvia","lebanon","libya","liechtenstein","lithuania","luxembourg","macau-sar",
-      "madagascar","malaysia","malta","mauritania","mauritius","mexico","moldova","mongolia",
-      "montenegro","morocco","mozambique","myanmar","namibia-republic-of","netherlands",
-      "new-caledonia","new-zealand","nicaragua","nigeria","north-macedonia","norway","oman",
-      "pakistan","palestinian-territories","panama","papua-new-guinea","paraguay","peru",
-      "philippines","poland","portugal","puerto-rico","qatar","romania","russia","rwanda",
-      "saudi-arabia","senegal","serbia","sierra-leone","singapore","slovak-republic","slovenia",
-      "south-africa","spain","sri-lanka","sweden","switzerland","taiwan","tanzania","thailand",
-      "timor-leste","trinidad-and-tobago","tunisia","turkey","turkmenistan","uganda","ukraine",
-      "united-arab-emirates","united-kingdom","united-states","uruguay","uzbekistan","venezuela",
-      "vietnam","zambia","zimbabwe"
-    ];
-
-    /* === PROMPTS === */
-    const PROMPT_DETECT_SLUG = 
-`Given the transaction description below, identify the *payer's* jurisdiction and output exactly **one** slug from the list of valid PwC country slugs provided.
+      /* === PROMPTS === */
+      const PROMPT_DETECT_SLUG = `Given the transaction description below, identify the *payer's* jurisdiction and output exactly **one** slug from the list of valid PwC country slugs provided.
 Return ONLY the slug, lowercase, hyphenated, no extra text.
 Valid slugs:
-${SLUGS.join(", ")}` ;
+${SLUGS.join(", ")}`;
 
-    const makeRatesPrompt = pwcUrl => 
-`Role: You are a Withholding Tax (WHT) researcher.
+      const makeRatesPrompt = (pwcUrl) =>
+        `Role: You are a Withholding Tax (WHT) researcher.
 Task: Using *only* the following PwC page as your source:
 ${pwcUrl}
 provide the domestic and treaty WHT rates for the transaction below.
@@ -104,207 +350,227 @@ Provide any commentary based on the PwC page that supports each rate.
 Return exactly:
 [Territories]: ...
 [Domestic Rate]: ...
-[Treaty Rate]: ...` ;
+[Treaty Rate]: ...`;
 
-    const PROMPT_ARTICLE = 
-`Role: You are a Withholding Tax (WHT) researcher.
+      const PROMPT_ARTICLE = `Role: You are a Withholding Tax (WHT) researcher.
 Task: Provide the FULL treaty article that sets the WHT rate for the transaction below (e.g. the whole of Article 11).
 Return exactly:
-[Treaty Article]: ...` ;
+[Treaty Article]: ...`;
 
-    const PROMPT_ARTICLE_ALT =
-`Please provide the complete text of the treaty article (including the article number, title, and all numbered paragraphs)
+      const PROMPT_ARTICLE_ALT = `Please provide the complete text of the treaty article (including the article number, title, and all numbered paragraphs)
 that governs the withholding-tax rate for the transaction described below.
-Return ONLY the article text — no commentary, no prefixes.` ;
+Return ONLY the article text — no commentary, no prefixes.`;
 
-    /* === HELPERS === */
-    const $ = s => document.querySelector(s);
-    const chips  = $("#chips");
-    const form   = $("#f");
-    const desc   = $("#d");
-    const outBox = $("#results-container");
-    const btn    = $("#b");
+      /* === HELPERS === */
+      const $ = (s) => document.querySelector(s);
+      const chips = $("#chips");
+      const form = $("#f");
+      const desc = $("#d");
+      const outBox = $("#results-container");
+      const btn = $("#b");
 
-    chips.addEventListener("click", e=>{
-      if(e.target.classList.contains("chip")){
-        desc.value=e.target.textContent;
-        desc.focus();
-      }
-    });
-
-    const escapeHTML = s =>
-      s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-       .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
-
-    const domain = u=>{
-      try{return new URL(u).hostname.replace(/^www\./,"");}
-      catch{return u}
-    };
-
-    const escapeRegex = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-    const grab = (tag, txt)=>{
-      const safe = escapeRegex(tag);
-      const m = txt.match(new RegExp(`\\[?${safe}\\]?:\\s*([\\s\\S]*?)(?=\\n\\[|$)`, "i"));
-      return m ? m[1].trim() : "";
-    };
-
-    /* === GEMINI CALL === */
-    async function callGemini(model, prompt, query, toolBlock){
-      const body = {
-        contents:[
-          {role:"user",parts:[{text:prompt}]},
-          {role:"user",parts:[{text:query}]}
-        ],
-        generationConfig:{responseMimeType:"text/plain"},
-        tools: toolBlock
-      };
-      const res = await fetch(URL_BASE(model),{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(body)
-      });
-      if(!res.ok) throw new Error(res.status+" "+res.statusText);
-      const j = await res.json();
-      const cand = j.candidates?.[0] || {};
-      const txt = cand.content?.parts?.[0]?.text || "";
-      const links=new Map();
-      (cand.groundingMetadata?.groundingChunks||[]).forEach(c=>{
-        if(c.web?.uri){
-          const u=c.web.uri;
-          const t=c.web.title||domain(u);
-          if(!links.has(u)) links.set(u,t);
+      chips.addEventListener("click", (e) => {
+        if (e.target.classList.contains("chip")) {
+          desc.value = e.target.textContent;
+          desc.focus();
         }
       });
-      return {txt,links,raw:JSON.stringify(cand.groundingMetadata,null,2)};
-    }
 
-    /* === MAIN === */
-    form.addEventListener("submit", async e=>{
-      e.preventDefault();
-      const query=desc.value.trim();
-      if(!query){
-        const div=document.createElement("div");
-        div.className="box";
-        div.innerHTML='<div class="error">Please enter a description.</div>';
-        outBox.prepend(div); setTimeout(()=>div.remove(),4000); return;
+      const escapeHTML = (s) =>
+        s
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+
+      const domain = (u) => {
+        try {
+          return new URL(u).hostname.replace(/^www\./, "");
+        } catch {
+          return u;
+        }
+      };
+
+      const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+      const grab = (tag, txt) => {
+        const safe = escapeRegex(tag);
+        const m = txt.match(
+          new RegExp(`\\[?${safe}\\]?:\\s*([\\s\\S]*?)(?=\\n\\[|$)`, "i"),
+        );
+        return m ? m[1].trim() : "";
+      };
+
+      /* === GEMINI CALL === */
+      async function callGemini(model, prompt, query, toolBlock) {
+        const body = {
+          contents: [
+            { role: "user", parts: [{ text: prompt }] },
+            { role: "user", parts: [{ text: query }] },
+          ],
+          generationConfig: { responseMimeType: "text/plain" },
+          tools: toolBlock,
+        };
+        const res = await fetch(URL_BASE(model), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error(res.status + " " + res.statusText);
+        const j = await res.json();
+        const cand = j.candidates?.[0] || {};
+        const txt = cand.content?.parts?.[0]?.text || "";
+        const links = new Map();
+        (cand.groundingMetadata?.groundingChunks || []).forEach((c) => {
+          if (c.web?.uri) {
+            const u = c.web.uri;
+            const t = c.web.title || domain(u);
+            if (!links.has(u)) links.set(u, t);
+          }
+        });
+        return {
+          txt,
+          links,
+          raw: JSON.stringify(cand.groundingMetadata, null, 2),
+        };
       }
 
-      btn.disabled=true;
-      outBox.innerHTML="";
-      desc.value="";
-
-      const phSlug=document.createElement("div");
-      phSlug.className="box";
-      phSlug.innerHTML=`<h2>Payer jurisdiction</h2>`;
-      outBox.append(phSlug);
-
-      const phRates=document.createElement("div");
-      phRates.className="box";
-      phRates.innerHTML="<h2>WHT Rates</h2>Waiting for payer jurisdiction…";
-      const phArt=document.createElement("div");
-      phArt.className="box";
-      phArt.innerHTML="<h2>Treaty Article</h2>Processing…";
-      outBox.append(phRates,phArt);
-
-      try{
-        /* --- STEP 1: identify slug --- */
-        const slugRes = await callGemini(
-          MODEL_SLUG,
-          PROMPT_DETECT_SLUG,
-          query,
-          [{googleSearch:{}}]
-        );
-        const slug = slugRes.txt.trim().toLowerCase();
-        phSlug.innerHTML=`<h2>Payer jurisdiction</h2><div>${escapeHTML(slug)}</div>`;
-
-        if(!SLUGS.includes(slug)){
-          phSlug.innerHTML+=`<div class="error">The detected slug isn't in the approved list.</div>`;
-          btn.disabled=false;
+      /* === MAIN === */
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const query = desc.value.trim();
+        if (!query) {
+          const div = document.createElement("div");
+          div.className = "box";
+          div.innerHTML =
+            '<div class="error">Please enter a description.</div>';
+          outBox.prepend(div);
+          setTimeout(() => div.remove(), 4000);
           return;
         }
 
-        /* --- Build PwC URL for rates --- */
-        const pwcUrl=`https://taxsummaries.pwc.com/${slug}/corporate/withholding-taxes`;
-        phRates.innerHTML="<h2>WHT Rates</h2>Processing…";
+        btn.disabled = true;
+        outBox.innerHTML = "";
+        desc.value = "";
 
-        /* --- STEP 2: run rates & article in parallel --- */
-        const [ratesRes,articleRes] = await Promise.all([
-          callGemini(
-            MODEL_MAIN,                             // rates
-            makeRatesPrompt(pwcUrl),
+        const phSlug = document.createElement("div");
+        phSlug.className = "box";
+        phSlug.innerHTML = `<h2>Payer jurisdiction</h2>`;
+        outBox.append(phSlug);
+
+        const phRates = document.createElement("div");
+        phRates.className = "box";
+        phRates.innerHTML = "<h2>WHT Rates</h2>Waiting for payer jurisdiction…";
+        const phArt = document.createElement("div");
+        phArt.className = "box";
+        phArt.innerHTML = "<h2>Treaty Article</h2>Processing…";
+        outBox.append(phRates, phArt);
+
+        try {
+          /* --- STEP 1: identify slug --- */
+          const slugRes = await callGemini(
+            MODEL_SLUG,
+            PROMPT_DETECT_SLUG,
             query,
-            [{urlContext:{}},{googleSearch:{}}]
-          ),
-          callGemini(
-            MODEL_ARTICLE,                          // treaty article (NEW MODEL)
-            PROMPT_ARTICLE,
-            query,
-            [{googleSearch:{}}]
-          )
-        ]);
-
-        /* ========== WHT RATES ========== */
-        const territories=grab("Territories",ratesRes.txt);
-        const domRate    =grab("Domestic Rate",ratesRes.txt);
-        const trtRate    =grab("Treaty Rate",ratesRes.txt);
-
-        let rHTML=`<h2>WHT Rates</h2>`;
-        if(territories) rHTML+=`<div class="sec"><span class="label">Territories:</span> ${escapeHTML(territories)}</div>`;
-        if(domRate)     rHTML+=`<div class="sec"><span class="label">Domestic Rate:</span><br><pre>${escapeHTML(domRate)}</pre></div>`;
-        if(trtRate)     rHTML+=`<div class="sec"><span class="label">Treaty Rate:</span><br><pre>${escapeHTML(trtRate)}</pre></div>`;
-
-        if(ratesRes.links.size){
-          rHTML+='<div class="sec links"><span class="label">Sources:</span>';
-          ratesRes.links.forEach((title,u)=>{
-            rHTML+=`<a href="${u}" target="_blank" data-domain="${domain(u)}">${escapeHTML(title)}</a>`;
-          });
-          rHTML+='</div>';
-        }
-        rHTML+=`<details><summary>Raw Gemini output</summary><pre>${escapeHTML(ratesRes.txt)}</pre><pre>${escapeHTML(ratesRes.raw)}</pre></details>`;
-        phRates.innerHTML=rHTML;
-
-        /* ========== TREATY ARTICLE ========== */
-        let treatyArt     = grab("Treaty Article",articleRes.txt);
-        let articleLinks  = articleRes.links;
-
-        /* If the first attempt failed, use fallback prompt (same MODEL_ARTICLE) */
-        if(!treatyArt){
-          const articleRes2 = await callGemini(
-            MODEL_ARTICLE,
-            PROMPT_ARTICLE_ALT,
-            query,
-            [{googleSearch:{}}]
+            [{ googleSearch: {} }],
           );
-          treatyArt    = articleRes2.txt.trim();
-          articleLinks = articleRes2.links.size ? articleRes2.links : articleLinks;
+          const slug = slugRes.txt.trim().toLowerCase();
+          phSlug.innerHTML = `<h2>Payer jurisdiction</h2><div>${escapeHTML(slug)}</div>`;
+
+          if (!SLUGS.includes(slug)) {
+            phSlug.innerHTML += `<div class="error">The detected slug isn't in the approved list.</div>`;
+            btn.disabled = false;
+            return;
+          }
+
+          /* --- Build PwC URL for rates --- */
+          const pwcUrl = `https://taxsummaries.pwc.com/${slug}/corporate/withholding-taxes`;
+          phRates.innerHTML = "<h2>WHT Rates</h2>Processing…";
+
+          /* --- STEP 2: run rates & article in parallel --- */
+          const [ratesRes, articleRes] = await Promise.all([
+            callGemini(
+              MODEL_MAIN, // rates
+              makeRatesPrompt(pwcUrl),
+              query,
+              [{ urlContext: {} }, { googleSearch: {} }],
+            ),
+            callGemini(
+              MODEL_ARTICLE, // treaty article (NEW MODEL)
+              PROMPT_ARTICLE,
+              query,
+              [{ googleSearch: {} }],
+            ),
+          ]);
+
+          /* ========== WHT RATES ========== */
+          const territories = grab("Territories", ratesRes.txt);
+          const domRate = grab("Domestic Rate", ratesRes.txt);
+          const trtRate = grab("Treaty Rate", ratesRes.txt);
+
+          let rHTML = `<h2>WHT Rates</h2>`;
+          if (territories)
+            rHTML += `<div class="sec"><span class="label">Territories:</span> ${escapeHTML(territories)}</div>`;
+          if (domRate)
+            rHTML += `<div class="sec"><span class="label">Domestic Rate:</span><br><pre>${escapeHTML(domRate)}</pre></div>`;
+          if (trtRate)
+            rHTML += `<div class="sec"><span class="label">Treaty Rate:</span><br><pre>${escapeHTML(trtRate)}</pre></div>`;
+
+          if (ratesRes.links.size) {
+            rHTML +=
+              '<div class="sec links"><span class="label">Sources:</span>';
+            ratesRes.links.forEach((title, u) => {
+              rHTML += `<a href="${u}" target="_blank" data-domain="${domain(u)}">${escapeHTML(title)}</a>`;
+            });
+            rHTML += "</div>";
+          }
+          rHTML += `<details><summary>Raw Gemini output</summary><pre>${escapeHTML(ratesRes.txt)}</pre><pre>${escapeHTML(ratesRes.raw)}</pre></details>`;
+          phRates.innerHTML = rHTML;
+
+          /* ========== TREATY ARTICLE ========== */
+          let treatyArt = grab("Treaty Article", articleRes.txt);
+          let articleLinks = articleRes.links;
+
+          /* If the first attempt failed, use fallback prompt (same MODEL_ARTICLE) */
+          if (!treatyArt) {
+            const articleRes2 = await callGemini(
+              MODEL_ARTICLE,
+              PROMPT_ARTICLE_ALT,
+              query,
+              [{ googleSearch: {} }],
+            );
+            treatyArt = articleRes2.txt.trim();
+            articleLinks = articleRes2.links.size
+              ? articleRes2.links
+              : articleLinks;
+          }
+
+          if (!treatyArt) treatyArt = "(not returned)";
+
+          let aHTML = "<h2>Treaty Article</h2>";
+          aHTML += `<div class="sec"><pre>${escapeHTML(treatyArt)}</pre></div>`;
+
+          if (articleLinks && articleLinks.size) {
+            aHTML +=
+              '<div class="sec links"><span class="label">Sources:</span>';
+            articleLinks.forEach((title, u) => {
+              aHTML += `<a href="${u}" target="_blank" data-domain="${domain(u)}">${escapeHTML(title)}</a>`;
+            });
+            aHTML += "</div>";
+          }
+
+          aHTML += `<details><summary>Raw Gemini output (initial)</summary><pre>${escapeHTML(articleRes.txt)}</pre><pre>${escapeHTML(articleRes.raw)}</pre></details>`;
+          phArt.innerHTML = aHTML;
+        } catch (err) {
+          const d = document.createElement("div");
+          d.className = "box";
+          d.innerHTML = `<div class="error">Error: ${escapeHTML(err.message)}</div>`;
+          outBox.append(d);
+        } finally {
+          btn.disabled = false;
         }
-
-        if(!treatyArt) treatyArt="(not returned)";
-
-        let aHTML="<h2>Treaty Article</h2>";
-        aHTML+=`<div class="sec"><pre>${escapeHTML(treatyArt)}</pre></div>`;
-
-        if(articleLinks && articleLinks.size){
-          aHTML+='<div class="sec links"><span class="label">Sources:</span>';
-          articleLinks.forEach((title,u)=>{
-            aHTML+=`<a href="${u}" target="_blank" data-domain="${domain(u)}">${escapeHTML(title)}</a>`;
-          });
-          aHTML+='</div>';
-        }
-
-        aHTML+=`<details><summary>Raw Gemini output (initial)</summary><pre>${escapeHTML(articleRes.txt)}</pre><pre>${escapeHTML(articleRes.raw)}</pre></details>`;
-        phArt.innerHTML=aHTML;
-
-      }catch(err){
-        const d=document.createElement("div");
-        d.className="box";
-        d.innerHTML=`<div class="error">Error: ${escapeHTML(err.message)}</div>`;
-        outBox.append(d);
-      }finally{
-        btn.disabled=false;
-      }
-    });
-  </script>
-</body>
+      });
+    </script>
+  </body>
 </html>
