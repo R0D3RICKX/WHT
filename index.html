@@ -1,22 +1,28 @@
-<!doctype html>
+!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <title>WHT Analysis (Gemini)</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
       body {
-        font-family: Roboto, Arial, sans-serif;
-        background: #f7f7fb;
+        font-family: "Inter", Roboto, Arial, sans-serif;
+        background: linear-gradient(135deg, #eaf0fc, #f7f7fb);
         margin: 0;
       }
       .container {
-        max-width: 760px;
-        margin: 40px auto;
+        max-width: 820px;
+        margin: 50px auto;
         background: #fff;
-        padding: 2rem;
-        border-radius: 18px;
-        box-shadow: 0 8px 32px rgba(30, 30, 60, 0.13);
+        padding: 2.4rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 36px rgba(30, 30, 60, 0.15);
       }
       h1 {
         margin: 0 0 1.4rem;
@@ -50,17 +56,18 @@
         margin: 0.6rem 0 1rem;
       }
       .chip {
-        background: #e8f0fe;
-        border: 1px solid #a3c0ff;
+        background: #eef3ff;
+        border: 1px solid #aac5ff;
         color: #1a73e8;
         padding: 0.35rem 0.9rem;
         border-radius: 16px;
         font-size: 0.9rem;
         cursor: pointer;
         user-select: none;
+        transition: background 0.2s;
       }
       .chip:hover {
-        background: #d2e3fc;
+        background: #dae6ff;
       }
       button {
         background: #4285f4;
@@ -71,6 +78,10 @@
         font-size: 1.05rem;
         font-weight: 600;
         cursor: pointer;
+        transition: background 0.2s;
+      }
+      button:hover:not(:disabled) {
+        background: #3b78ee;
       }
       button:disabled {
         background: #a5c6fa;
@@ -81,12 +92,14 @@
         flex-direction: column;
         gap: 1.5rem;
         margin-top: 1.3rem;
+        transition: opacity 0.2s;
       }
       .box {
-        background: #f1f5fc;
+        background: #f8faff;
         border-radius: 12px;
         padding: 1.2rem;
         color: #232847;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
       }
       .box h2 {
         margin: 0 0 0.8rem;
@@ -126,6 +139,10 @@
         cursor: pointer;
         font-weight: 600;
         color: #555;
+        transition: color 0.2s;
+      }
+      summary:hover {
+        color: #222;
       }
       pre {
         white-space: pre-wrap;
