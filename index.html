@@ -141,9 +141,12 @@ Return ONLY the article text — no commentary, no prefixes.` ;
       catch{return u}
     };
 
+    const escapeRegex = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
     const grab = (tag, txt)=>{
-      const m = txt.match(new RegExp("\\[?"+tag+"\\]?:\\s*([\\s\\S]*?)(?=\\n\\[|$)","i"));
-      return m?m[1].trim():"";
+      const safe = escapeRegex(tag);
+      const m = txt.match(new RegExp(`\\[?${safe}\\]?:\\s*([\\s\\S]*?)(?=\\n\\[|$)`, "i"));
+      return m ? m[1].trim() : "";
     };
 
     /* === GEMINI CALL === */
