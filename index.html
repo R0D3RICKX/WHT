@@ -9,143 +9,147 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <style>
+<style>
       body {
         font-family: "Inter", Roboto, Arial, sans-serif;
-        background: linear-gradient(135deg, #eaf0fc, #f7f7fb);
+        background: #0f1014;
+        color: #e7e9ec;
         margin: 0;
+        line-height: 1.5;
       }
       .container {
-        max-width: 820px;
-        margin: 50px auto;
-        background: #fff;
-        padding: 2.4rem;
-        border-radius: 20px;
-        box-shadow: 0 10px 36px rgba(30, 30, 60, 0.15);
+        max-width: 900px;
+        margin: 60px auto;
+        background: #181a1f;
+        padding: 3rem;
+        border-radius: 12px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
       }
       h1 {
-        margin: 0 0 1.4rem;
+        margin: 0 0 1.6rem;
         text-align: center;
-        font-size: 2rem;
-        color: #28487a;
+        font-size: 2.2rem;
+        color: #ffffff;
       }
       label {
-        font-weight: 600;
-        color: #425075;
+        font-weight: 500;
         display: block;
-        margin-bottom: 0.4rem;
+        margin-bottom: 0.5rem;
+        color: #a8b1c8;
       }
       textarea {
         width: 100%;
-        min-height: 80px;
-        padding: 10px;
-        border: 1px solid #c5cbe0;
+        min-height: 120px;
+        padding: 0.8rem;
+        background: #101216;
+        border: 1px solid #333c4d;
         border-radius: 8px;
+        color: #e7e9ec;
         font-size: 1rem;
-        resize: vertical;
       }
       textarea:focus {
-        border-color: #4285f4;
+        border-color: #60a5fa;
         outline: none;
       }
       .chips {
         display: flex;
         gap: 0.5rem;
         flex-wrap: wrap;
-        margin: 0.6rem 0 1rem;
+        margin-bottom: 1rem;
       }
       .chip {
-        background: #eef3ff;
-        border: 1px solid #aac5ff;
-        color: #1a73e8;
-        padding: 0.35rem 0.9rem;
-        border-radius: 16px;
-        font-size: 0.9rem;
+        background: #222630;
+        border: 1px solid #3b4152;
+        color: #60a5fa;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
         cursor: pointer;
+        transition: background 0.15s;
         user-select: none;
-        transition: background 0.2s;
       }
       .chip:hover {
-        background: #dae6ff;
+        background: #2b3140;
       }
       button {
-        background: #4285f4;
+        background: #60a5fa;
         color: #fff;
         border: none;
-        padding: 0.8rem 1.6rem;
+        padding: 0.9rem 1.6rem;
         border-radius: 8px;
-        font-size: 1.05rem;
+        font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
         transition: background 0.2s;
       }
       button:hover:not(:disabled) {
-        background: #3b78ee;
+        background: #5195e7;
       }
       button:disabled {
-        background: #a5c6fa;
+        background: #334d73;
         cursor: wait;
       }
       #results-container {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
-        margin-top: 1.3rem;
-        transition: opacity 0.2s;
+        margin-top: 1.5rem;
       }
       .box {
-        background: #f8faff;
-        border-radius: 12px;
-        padding: 1.2rem;
-        color: #232847;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        background: #1f222a;
+        border-radius: 8px;
+        padding: 1.4rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        color: #e7e9ec;
       }
       .box h2 {
-        margin: 0 0 0.8rem;
-        font-size: 1.2rem;
-        color: #29477c;
+        margin-top: 0;
+        font-size: 1.1rem;
+        color: #60a5fa;
       }
       .sec {
         margin-bottom: 1rem;
       }
       .sec span.label {
         font-weight: 700;
-        color: #29477c;
+        color: #9ab4e2;
       }
       .links a {
         display: block;
-        color: #1a73e8;
+        color: #7fb8ff;
         text-decoration: underline;
         word-break: break-all;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
       }
       .links a::after {
         content: " (" attr(data-domain) ")";
-        font-size: 0.85em;
-        color: #666;
+        font-size: 0.8rem;
+        color: #8591a6;
       }
       .error {
-        background: #fff6f6;
+        background: #3a1e20;
+        color: #ffb4af;
         border-radius: 8px;
         padding: 1rem;
-        color: #d93025;
       }
       details {
-        margin-top: 1.2rem;
+        margin-top: 1rem;
         font-size: 0.85rem;
+        color: #cbd5e1;
       }
       summary {
         cursor: pointer;
         font-weight: 600;
-        color: #555;
+        color: #cbd5e1;
         transition: color 0.2s;
       }
       summary:hover {
-        color: #222;
+        color: #ffffff;
       }
       pre {
         white-space: pre-wrap;
         word-wrap: break-word;
+        color: #e7e9ec;
       }
     </style>
   </head>
